@@ -4,3 +4,7 @@
 
 obj-y += dram.o
 obj-y += cpu.o
+
+ifeq ($(CONFIG_TARGET_SUNXI),y)
+obj-y += ../thead/cache.o
+endif
