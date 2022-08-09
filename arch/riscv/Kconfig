@@ -28,6 +28,10 @@ config TARGET_SIPEED_MAIX
 	bool "Support Sipeed Maix Board"
 	select SYS_CACHE_SHIFT_6
 
+config TARGET_SUNXI
+	bool "Support Allwinner sunxi SoCs with RISC-V cores"
+	select SYS_CACHE_SHIFT_6
+
 config TARGET_OPENPITON_RISCV64
 	bool "Support RISC-V cores on OpenPiton SoC"
 
