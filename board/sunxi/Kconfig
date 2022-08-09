@@ -69,9 +69,6 @@ config SYS_CPU
 config SYS_SOC
 	default "sunxi"
 
-config SYS_TEXT_BASE
-	default 0x4a000000 if MACH_SUN20I
-
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select CLK

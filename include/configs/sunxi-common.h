@@ -12,7 +12,10 @@
 #ifndef _SUNXI_COMMON_CONFIG_H
 #define _SUNXI_COMMON_CONFIG_H
 
+#ifndef CONFIG_DM_SERIAL
 #include <asm/arch/cpu.h>
+#endif
+
 #include <linux/stringify.h>
 
 /* Serial & console */
@@ -33,7 +36,18 @@
 # define CONFIG_SYS_NS16550_COM5		SUNXI_R_UART_BASE
 #endif
 
+/* I2C */
+#ifdef CONFIG_MACH_SUNIV
+#define CONFIG_SYS_TCLK			100000000
+#else
+#define CONFIG_SYS_TCLK			24000000
+#endif
+
 /* CPU */
+
+#ifdef CONFIG_RISCV
+#define CONFIG_SYS_CACHELINE_SIZE	64
+#endif
 
 /*
  * The DRAM Base differs between some models. We cannot use macros for the
@@ -52,7 +66,10 @@
 #define SDRAM_OFFSET(x) 0x4##x
 #define CONFIG_SYS_SDRAM_BASE		0x40000000
 /* V3s do not have enough memory to place code at 0x4a000000 */
+#define CONFIG_SPL_BSS_START_ADDR	0x4ff80000
 #endif
+
+#define CONFIG_SPL_BSS_MAX_SIZE		0x00080000 /* 512 KiB */
 
 /*
  * The A80's A1 sram starts at 0x00010000 rather then at 0x00000000 and is
@@ -66,7 +83,11 @@
  */
 #define CONFIG_SYS_INIT_RAM_ADDR	CONFIG_SUNXI_SRAM_ADDRESS
 /* FIXME: this may be larger on some SoCs */
+#ifdef CONFIG_RISCV
+#define CONFIG_SYS_INIT_RAM_SIZE	0x28000 /* 160 KiB */
+#else
 #define CONFIG_SYS_INIT_RAM_SIZE	0x8000 /* 32 KiB */
+#endif
 
 #define PHYS_SDRAM_0			CONFIG_SYS_SDRAM_BASE
 #define PHYS_SDRAM_0_SIZE		0x80000000 /* 2 GiB */
@@ -106,9 +127,11 @@
 #elif CONFIG_SUNXI_SRAM_ADDRESS == 0x20000
 #ifdef CONFIG_MACH_SUN50I_H616
 #define LOW_LEVEL_SRAM_STACK		0x58000
-#else
+#elif defined(CONFIG_MACH_SUN50I_H6)
 /* end of SRAM A2 on H6 for now */
 #define LOW_LEVEL_SRAM_STACK		0x00118000
+#else /* CONFIG_RISCV */
+#define LOW_LEVEL_SRAM_STACK		CONFIG_SYS_INIT_SP_ADDR
 #endif
 #else
 #define LOW_LEVEL_SRAM_STACK		0x00008000	/* End of sram */
@@ -135,14 +158,18 @@
 #define FDTOVERLAY_ADDR_R __stringify(SDRAM_OFFSET(FE00000))
 #define RAMDISK_ADDR_R    __stringify(SDRAM_OFFSET(FF00000))
 
-#elif defined(CONFIG_MACH_SUN8I_V3S)
+#elif defined(CONFIG_MACH_SUN8I_V3S) || defined(CONFIG_RISCV)
 /*
  * 64M RAM minus 2MB heap + 16MB for u-boot, stack, fb, etc.
  * 16M uncompressed kernel, 8M compressed kernel, 1M fdt,
  * 1M script, 1M pxe, 1M dt overlay and the ramdisk at the end.
  */
 #define BOOTM_SIZE        __stringify(0x2e00000)
+#ifdef CONFIG_RISCV
+#define KERNEL_ADDR_R     __stringify(SDRAM_OFFSET(0040000))
+#else
 #define KERNEL_ADDR_R     __stringify(SDRAM_OFFSET(1000000))
+#endif
 #define FDT_ADDR_R        __stringify(SDRAM_OFFSET(1800000))
 #define SCRIPT_ADDR_R     __stringify(SDRAM_OFFSET(1900000))
 #define PXEFILE_ADDR_R    __stringify(SDRAM_OFFSET(1A00000))
@@ -289,6 +316,7 @@
 #endif
 
 #include <config_distro_bootcmd.h>
+#include <environment/distro/sf.h>
 
 #ifdef CONFIG_USB_KEYBOARD
 #define CONSOLE_STDIN_SETTINGS \
@@ -318,6 +346,8 @@
 
 #ifdef CONFIG_ARM64
 #define UUID_GPT_SYSTEM "b921b045-1df0-41c3-af44-4c6f280d3fae"
+#elif defined(CONFIG_RISCV)
+#define UUID_GPT_SYSTEM "72ec70a6-cf74-40e6-bd49-4bda08e8f224"
 #else
 #define UUID_GPT_SYSTEM "69dad710-2ce4-4e3c-b16c-21a1d49abed3"
 #endif
@@ -326,7 +356,7 @@
 	CONSOLE_STDIN_SETTINGS \
 	CONSOLE_STDOUT_SETTINGS
 
-#ifdef CONFIG_ARM64
+#if defined(CONFIG_ARM64) || defined(CONFIG_RISCV)
 #define FDTFILE "allwinner/" CONFIG_DEFAULT_DEVICE_TREE ".dtb"
 #else
 #define FDTFILE CONFIG_DEFAULT_DEVICE_TREE ".dtb"
@@ -343,6 +373,7 @@
 	"uuid_gpt_system=" UUID_GPT_SYSTEM "\0" \
 	"partitions=" PARTS_DEFAULT "\0" \
 	BOOTCMD_SUNXI_COMPAT \
-	BOOTENV
+	BOOTENV \
+	BOOTENV_SF
 
 #endif /* _SUNXI_COMMON_CONFIG_H */
