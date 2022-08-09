@@ -1,0 +1,68 @@
+if TARGET_SUNXI
+
+choice
+	prompt "sunxi SoC Variant"
+
+config MACH_SUN20I
+	bool "sun20i (Allwinner D1)"
+	depends on RISCV
+	select GENERIC_RISCV
+	select SPL_DM if SPL
+	imply SYSRESET_SBI
+
+endchoice
+
+config NR_DRAM_BANKS
+	default 1
+
+choice
+	prompt "SPL Image Type"
+	depends on SPL
+	default SPL_IMAGE_SUNXI_EGON
+
+config SPL_IMAGE_SUNXI_EGON
+	bool "eGON (normal)"
+	help
+	  Select this option to embed the SPL binary in an eGON.BT0 image,
+	  which is compatible with the normal boot ROM (NBROM).
+
+	  This is usually the correct option to choose.
+
+config SPL_IMAGE_SUNXI_TOC0
+	bool "TOC0 (secure)"
+	help
+	  Select this option to embed the SPL binary in a TOC0 image,
+	  which is compatible with the secure boot ROM (SBROM).
+
+endchoice
+
+config SPL_IMAGE_TYPE
+	string
+	default "sunxi_egon" if SPL_IMAGE_SUNXI_EGON
+	default "sunxi_toc0" if SPL_IMAGE_SUNXI_TOC0
+
+config SPL_MAX_SIZE
+	hex
+	default SUNXI_SRAM_SIZE
+
+config SUNXI_SRAM_ADDRESS
+	hex
+	default 0x20000 if MACH_SUN20I
+
+config SUNXI_SRAM_SIZE
+	hex
+	default 0x28000 if MACH_SUN20I
+
+config SYS_BOARD
+	default "sunxi"
+
+config SYS_CONFIG_NAME
+	default "sunxi-common" if MACH_SUN20I
+
+config SYS_CPU
+	default "generic" if MACH_SUN20I
+
+config SYS_SOC
+	default "sunxi"
+
+endif
