@@ -330,6 +330,16 @@ config BOOTM_RTEMS
 	help
 	  Support booting RTEMS images via the bootm command.
 
+config CMD_VBE
+	bool "vbe - Verified Boot for Embedded"
+	depends on BOOTMETH_VBE
+	default y if BOOTSTD_FULL
+	help
+	  Provides various subcommands related to VBE, such as listing the
+	  available methods, looking at the state and changing which method
+	  is used to boot. Updating the parameters is not currently
+	  supported.
+
 config BOOTM_VXWORKS
 	bool "Support booting VxWorks OS images"
 	depends on CMD_BOOTM
@@ -1825,7 +1835,7 @@ config CMD_ETHSW
 
 config CMD_PXE
 	bool "pxe"
-	select MENU
+	select PXE_UTILS
 	help
 	  Boot image via network using PXE protocol
 
@@ -2007,7 +2017,7 @@ config CMD_SOUND
 
 config CMD_SYSBOOT
 	bool "sysboot"
-	select MENU
+	select PXE_UTILS
 	help
 	  Boot image via local extlinux.conf file
 

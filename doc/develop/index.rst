@@ -14,6 +14,7 @@ General
    process
    release_cycle
    system_configuration
+   sending_patches
 
 Implementation
 --------------
@@ -39,6 +40,7 @@ Implementation
    smbios
    spl
    uefi/index
+   vbe
    version
 
 Debugging
