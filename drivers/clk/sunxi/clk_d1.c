@@ -11,6 +11,7 @@
 #include <dt-bindings/clock/sun20i-d1-ccu.h>
 #include <dt-bindings/reset/sun20i-d1-ccu.h>
 #include <linux/bitops.h>
+#include <clk_ncatv2.h>
 
 static struct ccu_clk_gate d1_gates[] = {
 	[CLK_BUS_MMC0]		= GATE(0x84c, BIT(0)),
