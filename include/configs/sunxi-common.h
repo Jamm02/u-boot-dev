@@ -12,7 +12,7 @@
 #ifndef _SUNXI_COMMON_CONFIG_H
 #define _SUNXI_COMMON_CONFIG_H
 
-#ifndef CONFIG_DM_SERIAL
+#ifndef CONFIG_TARGET_SUNXI
 #include <asm/arch/cpu.h>
 #endif
 
@@ -66,10 +66,10 @@
 #define SDRAM_OFFSET(x) 0x4##x
 #define CONFIG_SYS_SDRAM_BASE		0x40000000
 /* V3s do not have enough memory to place code at 0x4a000000 */
-#define CONFIG_SPL_BSS_START_ADDR	0x4ff80000
+// #define CONFIG_SPL_BSS_START_ADDR	0x4ff80000
 #endif
 
-#define CONFIG_SPL_BSS_MAX_SIZE		0x00080000 /* 512 KiB */
+// #define CONFIG_SPL_BSS_MAX_SIZE		0x00080000 /* 512 KiB */
 
 /*
  * The A80's A1 sram starts at 0x00010000 rather then at 0x00000000 and is

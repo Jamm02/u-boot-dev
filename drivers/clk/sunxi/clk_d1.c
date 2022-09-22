@@ -11,6 +11,7 @@
 #include <dt-bindings/clock/sun20i-d1-ccu.h>
 #include <dt-bindings/reset/sun20i-d1-ccu.h>
 #include <linux/bitops.h>
+#include <clk_ncatv2.h>
 
 static struct ccu_clk_gate d1_gates[] = {
 	[CLK_BUS_MMC0]		= GATE(0x84c, BIT(0)),
@@ -80,3 +81,16 @@ const struct ccu_desc d1_ccu_desc = {
 	.num_gates = ARRAY_SIZE(d1_gates),
 	.num_resets = ARRAY_SIZE(d1_resets),
 };
+
+// unsigned int clock_get_pll6(void)
+// {
+// 	struct sunxi_ccm_reg *const ccm =
+// 		(struct sunxi_ccm_reg *)SUNXI_CCM_BASE;
+
+// 	uint32_t rval = readl(&ccm->pll6_cfg);
+// 	int n = ((rval & CCM_PLL6_CTRL_N_MASK) >> CCM_PLL6_CTRL_N_SHIFT) + 1;
+// 	int m = ((rval >> CCM_PLL6_CTRL_M_SHIFT) & CCM_PLL6_CTRL_M_MASK) + 1;
+// 	int p0 = ((rval >> CCM_PLL6_CTRL_P0_SHIFT) & CCM_PLL6_CTRL_P0_MASK) + 1;
+// 	/* The register defines PLL6-2X, not plain PLL6 */
+// 	return 24000000 / n / m / p0;
+// }
