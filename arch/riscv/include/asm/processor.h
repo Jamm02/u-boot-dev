@@ -22,5 +22,6 @@
  *   - so far some files include /asm/processor.h, but
  *     no one uses the macros defined in this head file.
  **************************************************************/
+#define cpu_relax()			barrier()
 
 #endif /* __ASM_RISCV_PROCESSOR_H */
