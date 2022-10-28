@@ -30,10 +30,56 @@ config TARGET_SIPEED_MAIX
 
 config TARGET_SUNXI
 	bool "Support Allwinner sunxi SoCs with RISC-V cores"
+	select CLK
+	select DM_ETH if NET
+	select DM_GPIO
+	select DM_I2C if I2C
+	select DM_SERIAL
+	select DM_SPI if SPI
+	select GPIO
+	select MMC_SUNXI_HAS_NEW_MODE if MMC_SUNXI
+	select OF_HAS_PRIOR_STAGE
+	select PHY_SUN4I_USB if USB
+	select PINCTRL
+	select SPL_CLK if SPL_DM
+	select SPL_GPIO if SPL_DM
+	select SPL_OF_CONTROL if SPL_DM
+	select SPL_PINCTRL if SPL_DM
+	select SPL_SEPARATE_BSS if SPL
+	select SUPPORT_SPL
+	imply CMD_MMC
+	imply CMD_USB
+	imply DISTRO_DEFAULTS
+	imply FIT
+	imply MMC
+	imply SPL
+	imply SPL_SPI if SPI
+	imply SPL_MMC if MMC
+	imply SUNXI_GPIO
+	imply SYS_I2C_MVTWSI
+	imply SYS_NS16550
+	imply SYSRESET
+	imply USB_EHCI_GENERIC
+	imply USB_EHCI_HCD
+	imply USB_OHCI_GENERIC
+	imply USB_OHCI_HCD
+	imply WDT
 	select SYS_CACHE_SHIFT_6
 
 config TARGET_OPENPITON_RISCV64
 	bool "Support RISC-V cores on OpenPiton SoC"
+
+endchoice
+
+choice
+	prompt "sunxi SoC Variant"
+
+config MACH_SUN20I
+	bool "sun20i (Allwinner D1)"
+	depends on RISCV
+	select GENERIC_RISCV
+	select SPL_DM if SPL
+	imply SYSRESET_SBI
 
 endchoice
 
@@ -62,7 +108,9 @@ config SPL_SYS_DCACHE_OFF
 	  Do not enable data cache in SPL.
 
 # board-specific options below
-source "board/sunxi/Kconfig.sun20i"
+if TARGET_SUNXI
+source "board/sunxi/Kconfig"
+endif
 source "board/AndesTech/ax25-ae350/Kconfig"
 source "board/emulation/qemu-riscv/Kconfig"
 source "board/microchip/mpfs_icicle/Kconfig"
