@@ -1,4 +1,16 @@
 choice
+	prompt "sunxi SoC Variant"
+
+config MACH_SUN20I
+	bool "sun20i (Allwinner D1)"
+	depends on RISCV
+	select GENERIC_RISCV
+	select SPL_DM if SPL
+	imply SYSRESET_SBI
+
+endchoice
+
+choice
 	prompt "SPL Image Type"
 	default SPL_IMAGE_TYPE_SUNXI_EGON
 
