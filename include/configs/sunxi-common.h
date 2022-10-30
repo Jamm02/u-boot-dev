@@ -33,6 +33,13 @@
 # define CONFIG_SYS_NS16550_COM5		SUNXI_R_UART_BASE
 #endif
 
+/* I2C */
+#ifdef CONFIG_MACH_SUNIV
+#define CONFIG_SYS_TCLK			100000000
+#else
+#define CONFIG_SYS_TCLK			24000000
+#endif
+
 /* CPU */
 
 /*
