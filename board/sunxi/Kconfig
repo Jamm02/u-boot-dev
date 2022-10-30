@@ -34,3 +34,27 @@ config SPL_IMAGE_TYPE
 	string
 	default "sunxi_egon" if SPL_IMAGE_TYPE_SUNXI_EGON
 	default "sunxi_toc0" if SPL_IMAGE_TYPE_SUNXI_TOC0
+
+config SPL_MAX_SIZE
+	hex
+	default SUNXI_SRAM_SIZE
+
+config SUNXI_SRAM_ADDRESS
+	hex
+	default 0x20000 if MACH_SUN20I
+
+config SUNXI_SRAM_SIZE
+	hex
+	default 0x28000 if MACH_SUN20I
+
+config SYS_BOARD
+	default "sunxi"
+
+config SYS_CONFIG_NAME
+	default "sunxi-common" if MACH_SUN20I
+
+config SYS_CPU
+	default "generic" if MACH_SUN20I
+
+config SYS_SOC
+	default "sunxi"
