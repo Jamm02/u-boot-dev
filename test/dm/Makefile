@@ -47,6 +47,7 @@ ifneq ($(CONFIG_EFI_PARTITION),)
 obj-$(CONFIG_FASTBOOT_FLASH_MMC) += fastboot.o
 endif
 obj-$(CONFIG_FIRMWARE) += firmware.o
+obj-$(CONFIG_DM_FPGA) += fpga.o
 obj-$(CONFIG_DM_HWSPINLOCK) += hwspinlock.o
 obj-$(CONFIG_DM_I2C) += i2c.o
 obj-$(CONFIG_SOUND) += i2s.o
@@ -56,6 +57,7 @@ obj-$(CONFIG_LED) += led.o
 obj-$(CONFIG_DM_MAILBOX) += mailbox.o
 obj-$(CONFIG_DM_MDIO) += mdio.o
 obj-$(CONFIG_DM_MDIO_MUX) += mdio_mux.o
+obj-$(CONFIG_MEMORY) += memory.o
 obj-$(CONFIG_MISC) += misc.o
 obj-$(CONFIG_DM_MMC) += mmc.o
 obj-$(CONFIG_CMD_MUX) += mux-cmd.o
@@ -91,6 +93,7 @@ obj-$(CONFIG_DM_REGULATOR) += regulator.o
 obj-$(CONFIG_DM_RNG) += rng.o
 obj-$(CONFIG_DM_RTC) += rtc.o
 obj-$(CONFIG_SCMI_FIRMWARE) += scmi.o
+obj-$(CONFIG_SCSI) += scsi.o
 obj-$(CONFIG_DM_SERIAL) += serial.o
 obj-$(CONFIG_DM_SPI_FLASH) += sf.o
 obj-$(CONFIG_SIMPLE_BUS) += simple-bus.o
@@ -107,6 +110,7 @@ obj-$(CONFIG_SYSINFO_GPIO) += sysinfo-gpio.o
 obj-$(CONFIG_UT_DM) += tag.o
 obj-$(CONFIG_TEE) += tee.o
 obj-$(CONFIG_TIMER) += timer.o
+obj-$(CONFIG_TPM_V2) += tpm.o
 obj-$(CONFIG_DM_USB) += usb.o
 obj-$(CONFIG_DM_VIDEO) += video.o
 ifeq ($(CONFIG_VIRTIO_SANDBOX),y)

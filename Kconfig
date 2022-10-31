@@ -299,7 +299,7 @@ config SYS_MALLOC_F_LEN
 	default 0x4000 if SANDBOX || RISCV || ARCH_APPLE || ROCKCHIP_RK3368 || \
 			  ROCKCHIP_RK3399
 	default 0x8000 if RCAR_GEN3
-	default 0x10000 if ARCH_IMX8 || (ARCH_IMX8M && !IMX8MQ)
+	default 0x10000 if ARCH_IMX8 || ARCH_IMX8M
 	default 0x2000
 	help
 	  Before relocation, memory is very limited on many platforms. Still,
@@ -312,9 +312,9 @@ config SYS_MALLOC_LEN
 	default 0x4000000 if SANDBOX
 	default 0x2000000 if ARCH_ROCKCHIP || ARCH_OMAP2PLUS || ARCH_MESON
 	default 0x200000 if ARCH_BMIPS || X86
-	default 0x120000 if MACH_SUNIV
-	default 0x220000 if MACH_SUN8I_V3S
-	default 0x4020000 if ARCH_SUNXI
+	default 0x4020000 if SUNXI_MINIMUM_DRAM_MB >= 256
+	default 0x220000 if SUNXI_MINIMUM_DRAM_MB >= 64
+	default 0x120000 if SUNXI_MINIMUM_DRAM_MB >= 32
 	default 0x400000
 	help
 	  This defines memory to be allocated for Dynamic allocation
@@ -325,6 +325,7 @@ config SPL_SYS_MALLOC_F_LEN
 	depends on SYS_MALLOC_F && SPL
 	default 0 if !SPL_FRAMEWORK
 	default 0x2800 if RCAR_GEN3
+	default 0x2000 if IMX8MQ
 	default SYS_MALLOC_F_LEN
 	help
 	  In SPL memory is very limited on many platforms. Still,
@@ -539,7 +540,7 @@ config PLATFORM_ELFENTRY
 
 config STACK_SIZE
 	hex "Define max stack size that can be used by U-Boot"
-	default 0x4000000 if ARCH_VERSAL || ARCH_ZYNQMP
+	default 0x4000000 if ARCH_VERSAL_NET || ARCH_VERSAL || ARCH_ZYNQMP
 	default 0x200000 if MICROBLAZE
 	default 0x1000000
 	help

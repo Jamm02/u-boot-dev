@@ -11,6 +11,7 @@ General
 
    codingstyle
    designprinciples
+   patman
    process
    release_cycle
    system_configuration
@@ -27,6 +28,7 @@ Implementation
    ci_testing
    commands
    config_binding
+   cyclic
    devicetree/index
    distro
    driver-model/index

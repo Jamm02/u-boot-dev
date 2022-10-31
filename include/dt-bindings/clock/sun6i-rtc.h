@@ -1,7 +1,4 @@
 /* SPDX-License-Identifier: (GPL-2.0+ or MIT) */
-/*
- * Copyright (C) 2021 Samuel Holland <samuel@sholland.org>
- */
 
 #ifndef _DT_BINDINGS_CLK_SUN6I_RTC_H_
 #define _DT_BINDINGS_CLK_SUN6I_RTC_H_

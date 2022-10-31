@@ -1916,6 +1916,43 @@ int fit_conf_get_prop_node(const void *fit, int noffset,
 	return fit_conf_get_prop_node_index(fit, noffset, prop_name, 0);
 }
 
+static int fit_get_data_tail(const void *fit, int noffset,
+			     const void **data, size_t *size)
+{
+	char *desc;
+
+	if (noffset < 0)
+		return noffset;
+
+	if (!fit_image_verify(fit, noffset))
+		return -EINVAL;
+
+	if (fit_image_get_data_and_size(fit, noffset, data, size))
+		return -ENOENT;
+
+	if (!fit_get_desc(fit, noffset, &desc))
+		printf("%s\n", desc);
+
+	return 0;
+}
+
+int fit_get_data_node(const void *fit, const char *image_uname,
+		      const void **data, size_t *size)
+{
+	int noffset = fit_image_get_node(fit, image_uname);
+
+	return fit_get_data_tail(fit, noffset, data, size);
+}
+
+int fit_get_data_conf_prop(const void *fit, const char *prop_name,
+			   const void **data, size_t *size)
+{
+	int noffset = fit_conf_get_node(fit, NULL);
+
+	noffset = fit_conf_get_prop_node(fit, noffset, prop_name);
+	return fit_get_data_tail(fit, noffset, data, size);
+}
+
 static int fit_image_select(const void *fit, int rd_noffset, int verify)
 {
 	fit_image_print(fit, rd_noffset, "   ");
@@ -1932,8 +1969,8 @@ static int fit_image_select(const void *fit, int rd_noffset, int verify)
 	return 0;
 }
 
-int fit_get_node_from_config(bootm_headers_t *images, const char *prop_name,
-			ulong addr)
+int fit_get_node_from_config(struct bootm_headers *images,
+			     const char *prop_name, ulong addr)
 {
 	int cfg_noffset;
 	void *fit_hdr;
@@ -1994,7 +2031,7 @@ static const char *fit_get_image_type_property(int type)
 	return "unknown";
 }
 
-int fit_image_load(bootm_headers_t *images, ulong addr,
+int fit_image_load(struct bootm_headers *images, ulong addr,
 		   const char **fit_unamep, const char **fit_uname_configp,
 		   int arch, int image_type, int bootstage_id,
 		   enum fit_load_op load_op, ulong *datap, ulong *lenp)
@@ -2252,8 +2289,8 @@ int fit_image_load(bootm_headers_t *images, ulong addr,
 	return noffset;
 }
 
-int boot_get_setup_fit(bootm_headers_t *images, uint8_t arch,
-			ulong *setup_start, ulong *setup_len)
+int boot_get_setup_fit(struct bootm_headers *images, uint8_t arch,
+		       ulong *setup_start, ulong *setup_len)
 {
 	int noffset;
 	ulong addr;
@@ -2273,9 +2310,9 @@ int boot_get_setup_fit(bootm_headers_t *images, uint8_t arch,
 }
 
 #ifndef USE_HOSTCC
-int boot_get_fdt_fit(bootm_headers_t *images, ulong addr,
-		   const char **fit_unamep, const char **fit_uname_configp,
-		   int arch, ulong *datap, ulong *lenp)
+int boot_get_fdt_fit(struct bootm_headers *images, ulong addr,
+		     const char **fit_unamep, const char **fit_uname_configp,
+		     int arch, ulong *datap, ulong *lenp)
 {
 	int fdt_noffset, cfg_noffset, count;
 	const void *fit;

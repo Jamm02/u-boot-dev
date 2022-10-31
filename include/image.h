@@ -264,7 +264,7 @@ enum {
  * Legacy format image header,
  * all data in network byte order (aka natural aka bigendian).
  */
-typedef struct image_header {
+struct legacy_img_hdr {
 	uint32_t	ih_magic;	/* Image Header Magic Number	*/
 	uint32_t	ih_hcrc;	/* Image Header CRC Checksum	*/
 	uint32_t	ih_time;	/* Image Creation Timestamp	*/
@@ -277,28 +277,28 @@ typedef struct image_header {
 	uint8_t		ih_type;	/* Image Type			*/
 	uint8_t		ih_comp;	/* Compression Type		*/
 	uint8_t		ih_name[IH_NMLEN];	/* Image Name		*/
-} image_header_t;
+};
 
-typedef struct image_info {
+struct image_info {
 	ulong		start, end;		/* start/end of blob */
 	ulong		image_start, image_len; /* start of image within blob, len of image */
 	ulong		load;			/* load addr for the image */
 	uint8_t		comp, type, os;		/* compression, type of image, os type */
 	uint8_t		arch;			/* CPU architecture */
-} image_info_t;
+};
 
 /*
  * Legacy and FIT format headers used by do_bootm() and do_bootm_<os>()
  * routines.
  */
-typedef struct bootm_headers {
+struct bootm_headers {
 	/*
 	 * Legacy os image header, if it is a multi component image
 	 * then boot_get_ramdisk() and get_fdt() will attempt to get
 	 * data from second and third component accordingly.
 	 */
-	image_header_t	*legacy_hdr_os;		/* image header pointer */
-	image_header_t	legacy_hdr_os_copy;	/* header copy */
+	struct legacy_img_hdr	*legacy_hdr_os;		/* image header pointer */
+	struct legacy_img_hdr	legacy_hdr_os_copy;	/* header copy */
 	ulong		legacy_hdr_valid;
 
 	/*
@@ -325,7 +325,7 @@ typedef struct bootm_headers {
 	int		fit_noffset_setup;/* x86 setup subimage node offset */
 
 #ifndef USE_HOSTCC
-	image_info_t	os;		/* os image info */
+	struct image_info	os;		/* os image info */
 	ulong		ep;		/* entry point of OS */
 
 	ulong		rd_start, rd_end;/* ramdisk start/end */
@@ -342,26 +342,32 @@ typedef struct bootm_headers {
 
 	int		verify;		/* env_get("verify")[0] != 'n' */
 
-#define	BOOTM_STATE_START	(0x00000001)
-#define	BOOTM_STATE_FINDOS	(0x00000002)
-#define	BOOTM_STATE_FINDOTHER	(0x00000004)
-#define	BOOTM_STATE_LOADOS	(0x00000008)
-#define	BOOTM_STATE_RAMDISK	(0x00000010)
-#define	BOOTM_STATE_FDT		(0x00000020)
-#define	BOOTM_STATE_OS_CMDLINE	(0x00000040)
-#define	BOOTM_STATE_OS_BD_T	(0x00000080)
-#define	BOOTM_STATE_OS_PREP	(0x00000100)
-#define	BOOTM_STATE_OS_FAKE_GO	(0x00000200)	/* 'Almost' run the OS */
-#define	BOOTM_STATE_OS_GO	(0x00000400)
-#define	BOOTM_STATE_PRE_LOAD	0x00000800
+#define BOOTM_STATE_START	0x00000001
+#define BOOTM_STATE_FINDOS	0x00000002
+#define BOOTM_STATE_FINDOTHER	0x00000004
+#define BOOTM_STATE_LOADOS	0x00000008
+#define BOOTM_STATE_RAMDISK	0x00000010
+#define BOOTM_STATE_FDT		0x00000020
+#define BOOTM_STATE_OS_CMDLINE	0x00000040
+#define BOOTM_STATE_OS_BD_T	0x00000080
+#define BOOTM_STATE_OS_PREP	0x00000100
+#define BOOTM_STATE_OS_FAKE_GO	0x00000200	/* 'Almost' run the OS */
+#define BOOTM_STATE_OS_GO	0x00000400
+#define BOOTM_STATE_PRE_LOAD	0x00000800
 	int		state;
 
 #if defined(CONFIG_LMB) && !defined(USE_HOSTCC)
 	struct lmb	lmb;		/* for memory mgmt */
 #endif
-} bootm_headers_t;
+};
 
-extern bootm_headers_t images;
+#ifdef CONFIG_LMB
+#define images_lmb(_images)	(&(_images)->lmb)
+#else
+#define images_lmb(_images)	NULL
+#endif
+
+extern struct bootm_headers images;
 
 /*
  * Some systems (for example LWMON) have very short watchdog periods;
@@ -525,7 +531,7 @@ enum fit_load_op {
 	FIT_LOAD_REQUIRED,	/* Must be provided */
 };
 
-int boot_get_setup(bootm_headers_t *images, uint8_t arch, ulong *setup_start,
+int boot_get_setup(struct bootm_headers *images, uint8_t arch, ulong *setup_start,
 		   ulong *setup_len);
 
 /* Image format types, returned by _get_format() routine */
@@ -539,11 +545,11 @@ ulong genimg_get_kernel_addr_fit(char * const img_addr,
 			         const char **fit_uname_kernel);
 ulong genimg_get_kernel_addr(char * const img_addr);
 int genimg_get_format(const void *img_addr);
-int genimg_has_config(bootm_headers_t *images);
+int genimg_has_config(struct bootm_headers *images);
 
-int boot_get_fpga(int argc, char *const argv[], bootm_headers_t *images,
+int boot_get_fpga(int argc, char *const argv[], struct bootm_headers *images,
 		  uint8_t arch, const ulong *ld_start, ulong * const ld_len);
-int boot_get_ramdisk(int argc, char *const argv[], bootm_headers_t *images,
+int boot_get_ramdisk(int argc, char *const argv[], struct bootm_headers *images,
 		     uint8_t arch, ulong *rd_start, ulong *rd_end);
 
 /**
@@ -567,10 +573,10 @@ int boot_get_ramdisk(int argc, char *const argv[], bootm_headers_t *images,
  *     0, if only valid images or no images are found
  *     error code, if an error occurs during fit_image_load
  */
-int boot_get_loadable(int argc, char *const argv[], bootm_headers_t *images,
+int boot_get_loadable(int argc, char *const argv[], struct bootm_headers *images,
 		      uint8_t arch, const ulong *ld_start, ulong *const ld_len);
 
-int boot_get_setup_fit(bootm_headers_t *images, uint8_t arch,
+int boot_get_setup_fit(struct bootm_headers *images, uint8_t arch,
 		       ulong *setup_start, ulong *setup_len);
 
 /**
@@ -594,9 +600,9 @@ int boot_get_setup_fit(bootm_headers_t *images, uint8_t arch,
  *
  * Return: node offset of base image, or -ve error code on error
  */
-int boot_get_fdt_fit(bootm_headers_t *images, ulong addr,
-		   const char **fit_unamep, const char **fit_uname_configp,
-		   int arch, ulong *datap, ulong *lenp);
+int boot_get_fdt_fit(struct bootm_headers *images, ulong addr,
+		     const char **fit_unamep, const char **fit_uname_configp,
+		     int arch, ulong *datap, ulong *lenp);
 
 /**
  * fit_image_load() - load an image from a FIT
@@ -628,7 +634,7 @@ int boot_get_fdt_fit(bootm_headers_t *images, ulong addr,
  * @param lenp		Returns length of loaded image
  * Return: node offset of image, or -ve error code on error
  */
-int fit_image_load(bootm_headers_t *images, ulong addr,
+int fit_image_load(struct bootm_headers *images, ulong addr,
 		   const char **fit_unamep, const char **fit_uname_configp,
 		   int arch, int image_type, int bootstage_id,
 		   enum fit_load_op load_op, ulong *datap, ulong *lenp);
@@ -672,11 +678,11 @@ int image_source_script(ulong addr, const char *fit_uname);
  * @param prop_name	Property name to look up (FIT_..._PROP)
  * @param addr		Address of FIT in memory
  */
-int fit_get_node_from_config(bootm_headers_t *images, const char *prop_name,
-			ulong addr);
+int fit_get_node_from_config(struct bootm_headers *images,
+			     const char *prop_name, ulong addr);
 
 int boot_get_fdt(int flag, int argc, char *const argv[], uint8_t arch,
-		 bootm_headers_t *images,
+		 struct bootm_headers *images,
 		 char **of_flat_tree, ulong *of_size);
 void boot_fdt_add_mem_rsv_regions(struct lmb *lmb, void *fdt_blob);
 int boot_relocate_fdt(struct lmb *lmb, char **of_flat_tree, ulong *of_size);
@@ -691,11 +697,11 @@ int boot_get_kbd(struct lmb *lmb, struct bd_info **kbd);
 /*******************************************************************/
 static inline uint32_t image_get_header_size(void)
 {
-	return (sizeof(image_header_t));
+	return sizeof(struct legacy_img_hdr);
 }
 
 #define image_get_hdr_l(f) \
-	static inline uint32_t image_get_##f(const image_header_t *hdr) \
+	static inline uint32_t image_get_##f(const struct legacy_img_hdr *hdr) \
 	{ \
 		return uimage_to_cpu(hdr->ih_##f); \
 	}
@@ -708,7 +714,7 @@ image_get_hdr_l(ep)		/* image_get_ep */
 image_get_hdr_l(dcrc)		/* image_get_dcrc */
 
 #define image_get_hdr_b(f) \
-	static inline uint8_t image_get_##f(const image_header_t *hdr) \
+	static inline uint8_t image_get_##f(const struct legacy_img_hdr *hdr) \
 	{ \
 		return hdr->ih_##f; \
 	}
@@ -717,12 +723,12 @@ image_get_hdr_b(arch)		/* image_get_arch */
 image_get_hdr_b(type)		/* image_get_type */
 image_get_hdr_b(comp)		/* image_get_comp */
 
-static inline char *image_get_name(const image_header_t *hdr)
+static inline char *image_get_name(const struct legacy_img_hdr *hdr)
 {
 	return (char *)hdr->ih_name;
 }
 
-static inline uint32_t image_get_data_size(const image_header_t *hdr)
+static inline uint32_t image_get_data_size(const struct legacy_img_hdr *hdr)
 {
 	return image_get_size(hdr);
 }
@@ -738,22 +744,23 @@ static inline uint32_t image_get_data_size(const image_header_t *hdr)
  * returns:
  *     image payload data start address
  */
-static inline ulong image_get_data(const image_header_t *hdr)
+static inline ulong image_get_data(const struct legacy_img_hdr *hdr)
 {
 	return ((ulong)hdr + image_get_header_size());
 }
 
-static inline uint32_t image_get_image_size(const image_header_t *hdr)
+static inline uint32_t image_get_image_size(const struct legacy_img_hdr *hdr)
 {
 	return (image_get_size(hdr) + image_get_header_size());
 }
-static inline ulong image_get_image_end(const image_header_t *hdr)
+
+static inline ulong image_get_image_end(const struct legacy_img_hdr *hdr)
 {
 	return ((ulong)hdr + image_get_image_size(hdr));
 }
 
 #define image_set_hdr_l(f) \
-	static inline void image_set_##f(image_header_t *hdr, uint32_t val) \
+	static inline void image_set_##f(struct legacy_img_hdr *hdr, uint32_t val) \
 	{ \
 		hdr->ih_##f = cpu_to_uimage(val); \
 	}
@@ -766,7 +773,7 @@ image_set_hdr_l(ep)		/* image_set_ep */
 image_set_hdr_l(dcrc)		/* image_set_dcrc */
 
 #define image_set_hdr_b(f) \
-	static inline void image_set_##f(image_header_t *hdr, uint8_t val) \
+	static inline void image_set_##f(struct legacy_img_hdr *hdr, uint8_t val) \
 	{ \
 		hdr->ih_##f = val; \
 	}
@@ -775,13 +782,13 @@ image_set_hdr_b(arch)		/* image_set_arch */
 image_set_hdr_b(type)		/* image_set_type */
 image_set_hdr_b(comp)		/* image_set_comp */
 
-static inline void image_set_name(image_header_t *hdr, const char *name)
+static inline void image_set_name(struct legacy_img_hdr *hdr, const char *name)
 {
 	strncpy(image_get_name(hdr), name, IH_NMLEN);
 }
 
-int image_check_hcrc(const image_header_t *hdr);
-int image_check_dcrc(const image_header_t *hdr);
+int image_check_hcrc(const struct legacy_img_hdr *hdr);
+int image_check_dcrc(const struct legacy_img_hdr *hdr);
 #ifndef USE_HOSTCC
 ulong env_get_bootm_low(void);
 phys_size_t env_get_bootm_size(void);
@@ -789,15 +796,17 @@ phys_size_t env_get_bootm_mapsize(void);
 #endif
 void memmove_wd(void *to, void *from, size_t len, ulong chunksz);
 
-static inline int image_check_magic(const image_header_t *hdr)
+static inline int image_check_magic(const struct legacy_img_hdr *hdr)
 {
 	return (image_get_magic(hdr) == IH_MAGIC);
 }
-static inline int image_check_type(const image_header_t *hdr, uint8_t type)
+
+static inline int image_check_type(const struct legacy_img_hdr *hdr, uint8_t type)
 {
 	return (image_get_type(hdr) == type);
 }
-static inline int image_check_arch(const image_header_t *hdr, uint8_t arch)
+
+static inline int image_check_arch(const struct legacy_img_hdr *hdr, uint8_t arch)
 {
 	/* Let's assume that sandbox can load any architecture */
 	if (!tools_build() && IS_ENABLED(CONFIG_SANDBOX))
@@ -805,19 +814,20 @@ static inline int image_check_arch(const image_header_t *hdr, uint8_t arch)
 	return (image_get_arch(hdr) == arch) ||
 		(image_get_arch(hdr) == IH_ARCH_ARM && arch == IH_ARCH_ARM64);
 }
-static inline int image_check_os(const image_header_t *hdr, uint8_t os)
+
+static inline int image_check_os(const struct legacy_img_hdr *hdr, uint8_t os)
 {
 	return (image_get_os(hdr) == os);
 }
 
-ulong image_multi_count(const image_header_t *hdr);
-void image_multi_getimg(const image_header_t *hdr, ulong idx,
+ulong image_multi_count(const struct legacy_img_hdr *hdr);
+void image_multi_getimg(const struct legacy_img_hdr *hdr, ulong idx,
 			ulong *data, ulong *len);
 
 void image_print_contents(const void *hdr);
 
 #ifndef USE_HOSTCC
-static inline int image_check_target_arch(const image_header_t *hdr)
+static inline int image_check_target_arch(const struct legacy_img_hdr *hdr)
 {
 #ifndef IH_ARCH_DEFAULT
 # error "please define IH_ARCH_DEFAULT in your arch asm/u-boot.h"
@@ -866,7 +876,7 @@ int image_decomp(int comp, ulong load, ulong image_start, int type,
  * @lmb:	Points to logical memory block structure
  * Return: 0 if ok, <0 on failure
  */
-int image_setup_libfdt(bootm_headers_t *images, void *blob,
+int image_setup_libfdt(struct bootm_headers *images, void *blob,
 		       int of_size, struct lmb *lmb);
 
 /**
@@ -878,7 +888,7 @@ int image_setup_libfdt(bootm_headers_t *images, void *blob,
  * @param images	Images information
  * Return: 0 if ok, <0 on failure
  */
-int image_setup_linux(bootm_headers_t *images);
+int image_setup_linux(struct bootm_headers *images);
 
 /**
  * bootz_setup() - Extract stat and size of a Linux xImage
@@ -1014,6 +1024,76 @@ int fit_image_get_data_size_unciphered(const void *fit, int noffset,
 				       size_t *data_size);
 int fit_image_get_data_and_size(const void *fit, int noffset,
 				const void **data, size_t *size);
+
+/**
+ * fit_get_data_node() - Get verified image data for an image
+ * @fit: Pointer to the FIT format image header
+ * @image_uname: The name of the image node
+ * @data: A pointer which will be filled with the location of the image data
+ * @size: A pointer which will be filled with the size of the image data
+ *
+ * This function looks up the location and size of an image specified by its
+ * name. For example, if you had a FIT like::
+ *
+ *     images {
+ *         my-firmware {
+ *             ...
+ *	   };
+ *      };
+ *
+ * Then you could look up the data location and size of the my-firmware image
+ * by calling this function with @image_uname set to "my-firmware". This
+ * function also verifies the image data (if enabled) before returning. The
+ * image description is printed out on success. @data and @size will not be
+ * modified on faulure.
+ *
+ * Return:
+ * * 0 on success
+ * * -EINVAL if the image could not be verified
+ * * -ENOENT if there was a problem getting the data/size
+ * * Another negative error if there was a problem looking up the image node.
+ */
+int fit_get_data_node(const void *fit, const char *image_uname,
+		      const void **data, size_t *size);
+
+/**
+ * fit_get_data_conf_prop() - Get verified image data for a property in /conf
+ * @fit: Pointer to the FIT format image header
+ * @prop_name: The name of the property in /conf referencing the image
+ * @data: A pointer which will be filled with the location of the image data
+ * @size: A pointer which will be filled with the size of the image data
+ *
+ * This function looks up the location and size of an image specified by a
+ * property in /conf. For example, if you had a FIT like::
+ *
+ *     images {
+ *         my-firmware {
+ *             ...
+ *	   };
+ *      };
+ *
+ *      configurations {
+ *          default = "conf-1";
+ *          conf-1 {
+ *              some-firmware = "my-firmware";
+ *          };
+ *      };
+ *
+ * Then you could look up the data location and size of the my-firmware image
+ * by calling this function with @prop_name set to "some-firmware". This
+ * function also verifies the image data (if enabled) before returning. The
+ * image description is printed out on success. @data and @size will not be
+ * modified on faulure.
+ *
+ * Return:
+ * * 0 on success
+ * * -EINVAL if the image could not be verified
+ * * -ENOENT if there was a problem getting the data/size
+ * * Another negative error if there was a problem looking up the configuration
+ *   or image node.
+ */
+int fit_get_data_conf_prop(const void *fit, const char *prop_name,
+			   const void **data, size_t *size);
 
 int fit_image_hash_get_algo(const void *fit, int noffset, const char **algo);
 int fit_image_hash_get_value(const void *fit, int noffset, uint8_t **value,
@@ -1341,6 +1421,49 @@ struct crypto_algo *image_get_crypto_algo(const char *full_name);
  * Return: pointer to algorithm information, or NULL if not found
  */
 struct padding_algo *image_get_padding_algo(const char *name);
+
+#define IMAGE_PRE_LOAD_SIG_MAGIC		0x55425348
+#define IMAGE_PRE_LOAD_SIG_OFFSET_MAGIC		0
+#define IMAGE_PRE_LOAD_SIG_OFFSET_IMG_LEN	4
+#define IMAGE_PRE_LOAD_SIG_OFFSET_SIG		8
+
+#define IMAGE_PRE_LOAD_PATH			"/image/pre-load/sig"
+#define IMAGE_PRE_LOAD_PROP_ALGO_NAME		"algo-name"
+#define IMAGE_PRE_LOAD_PROP_PADDING_NAME	"padding-name"
+#define IMAGE_PRE_LOAD_PROP_SIG_SIZE		"signature-size"
+#define IMAGE_PRE_LOAD_PROP_PUBLIC_KEY		"public-key"
+#define IMAGE_PRE_LOAD_PROP_MANDATORY		"mandatory"
+
+/*
+ * Information in the device-tree about the signature in the header
+ */
+struct image_sig_info {
+	char *algo_name;	/* Name of the algo (eg: sha256,rsa2048) */
+	char *padding_name;	/* Name of the padding */
+	uint8_t *key;		/* Public signature key */
+	int key_len;		/* Length of the public key */
+	uint32_t sig_size;		/* size of the signature (in the header) */
+	int mandatory;		/* Set if the signature is mandatory */
+
+	struct image_sign_info sig_info; /* Signature info */
+};
+
+/*
+ * Header of the signature header
+ */
+struct sig_header_s {
+	uint32_t magic;
+	uint32_t version;
+	uint32_t header_size;
+	uint32_t image_size;
+	uint32_t offset_img_sig;
+	uint32_t flags;
+	uint32_t reserved0;
+	uint32_t reserved1;
+	uint8_t sha256_img_sig[SHA256_SUM_LEN];
+};
+
+#define SIG_HEADER_LEN			(sizeof(struct sig_header_s))
 
 /**
  * image_pre_load() - Manage pre load header

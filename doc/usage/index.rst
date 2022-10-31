@@ -31,10 +31,14 @@ Shell commands
    cmd/bootmeth
    cmd/button
    cmd/bootz
+   cmd/cat
    cmd/cbsysinfo
+   cmd/cls
    cmd/conitrace
+   cmd/cyclic
    cmd/dm
    cmd/echo
+   cmd/eficonfig
    cmd/env
    cmd/event
    cmd/exception
@@ -52,6 +56,7 @@ Shell commands
    cmd/mbr
    cmd/md
    cmd/mmc
+   cmd/pause
    cmd/pinmux
    cmd/printenv
    cmd/pstore
@@ -63,9 +68,12 @@ Shell commands
    cmd/scp03
    cmd/setexpr
    cmd/size
+   cmd/temperature
+   cmd/tftpput
    cmd/true
    cmd/ums
    cmd/wdt
+   cmd/xxd
 
 Booting OS
 ----------

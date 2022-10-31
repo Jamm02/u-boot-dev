@@ -34,14 +34,11 @@ DECLARE_GLOBAL_DATA_PTR;
 int spl_board_boot_device(enum boot_device boot_dev_spl)
 {
 	switch (boot_dev_spl) {
-	case MMC1_BOOT:
+	case MMC1_BOOT: /* eMMC */
 		return BOOT_DEVICE_MMC1;
-	case SD2_BOOT:
+	case SD2_BOOT: /* SD card */
 	case MMC2_BOOT:
 		return BOOT_DEVICE_MMC2;
-	case SD3_BOOT:
-	case MMC3_BOOT:
-		return BOOT_DEVICE_MMC1;
 	case USB_BOOT:
 		return BOOT_DEVICE_BOARD;
 	default:
@@ -56,12 +53,7 @@ void spl_dram_init(void)
 
 void spl_board_init(void)
 {
-	/* Serial download mode */
-	if (is_usb_boot()) {
-		puts("Back to ROM, SDP\n");
-		restore_boot_params();
-	}
-	puts("Normal Boot\n");
+	arch_misc_init();
 }
 
 #ifdef CONFIG_SPL_LOAD_FIT
@@ -73,7 +65,6 @@ int board_fit_config_name_match(const char *name)
 	return 0;
 }
 #endif
-
 
 __weak void board_early_init(void)
 {

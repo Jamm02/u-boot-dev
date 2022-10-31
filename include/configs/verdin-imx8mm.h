@@ -20,10 +20,12 @@
 #endif
 
 #define MEM_LAYOUT_ENV_SETTINGS \
-	"fdt_addr_r=0x44000000\0" \
-	"kernel_addr_r=0x42000000\0" \
-	"ramdisk_addr_r=0x46400000\0" \
-	"scriptaddr=0x46000000\0"
+	"fdt_addr_r=0x50200000\0" \
+	"kernel_addr_r=" __stringify(CONFIG_SYS_LOAD_ADDR) "\0" \
+	"kernel_comp_addr_r=0x40200000\0" \
+	"kernel_comp_size=0x08000000\0" \
+	"ramdisk_addr_r=0x50300000\0" \
+	"scriptaddr=0x50280000\0"
 
 /* Enable Distro Boot */
 #define BOOT_TARGET_DEVICES(func) \
@@ -64,9 +66,6 @@
 /* SDRAM configuration */
 #define PHYS_SDRAM                      0x40000000
 #define PHYS_SDRAM_SIZE			SZ_2G /* 2GB DDR */
-
-/* ENET */
-#define CONFIG_FEC_MXC_PHYADDR          7
 
 /* USB Configs */
 #define CONFIG_MXC_USB_PORTSC	(PORT_PTS_UTMI | PORT_PTS_PTW)

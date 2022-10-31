@@ -13,6 +13,7 @@
 #include <api.h>
 #include <bootstage.h>
 #include <cpu_func.h>
+#include <cyclic.h>
 #include <display_options.h>
 #include <exports.h>
 #ifdef CONFIG_MTD_NOR_FLASH
@@ -150,13 +151,13 @@ static int initr_reloc_global_data(void)
 	 */
 	gd->env_addr += gd->reloc_off;
 #endif
-#ifdef CONFIG_OF_EMBED
 	/*
 	 * The fdt_blob needs to be moved to new relocation address
 	 * incase of FDT blob is embedded with in image
 	 */
-	gd->fdt_blob += gd->reloc_off;
-#endif
+	if (CONFIG_IS_ENABLED(OF_EMBED) && CONFIG_IS_ENABLED(NEEDS_MANUAL_RELOC))
+		gd->fdt_blob += gd->reloc_off;
+
 #ifdef CONFIG_EFI_LOADER
 	/*
 	 * On the ARM architecture gd is mapped to a fixed register (r9 or x18).
@@ -232,6 +233,8 @@ static int initr_of_live(void)
 static int initr_dm(void)
 {
 	int ret;
+
+	oftree_reset();
 
 	/* Save the pre-reloc driver model and start a new one */
 	gd->dm_root_f = gd->dm_root;
@@ -340,7 +343,7 @@ static int initr_flash(void)
 	/*
 	 * Compute and print flash CRC if flashchecksum is set to 'y'
 	 *
-	 * NOTE: Maybe we should add some WATCHDOG_RESET()? XXX
+	 * NOTE: Maybe we should add some schedule()? XXX
 	 */
 	if (env_get_yesno("flashchecksum") == 1) {
 		const uchar *flash_base = (const uchar *)CONFIG_SYS_FLASH_BASE;
@@ -611,6 +614,7 @@ static init_fnc_t init_sequence_r[] = {
 #endif
 	initr_barrier,
 	initr_malloc,
+	cyclic_init,
 	log_init,
 	initr_bootstage,	/* Needs malloc() but has its own timer */
 #if defined(CONFIG_CONSOLE_RECORD)

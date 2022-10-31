@@ -8,6 +8,8 @@
 #include <efi.h>
 #include <efi_loader.h>
 #include <env.h>
+#include <image.h>
+#include <lmb.h>
 #include <log.h>
 #include <asm/global_data.h>
 #include <asm/sections.h>
@@ -119,7 +121,7 @@ struct xilinx_legacy_format {
 static void xilinx_eeprom_legacy_cleanup(char *eeprom, int size)
 {
 	int i;
-	char byte;
+	unsigned char byte;
 
 	for (i = 0; i < size; i++) {
 		byte = eeprom[i];
@@ -458,8 +460,8 @@ int board_late_init_xilinx(void)
 							desc->serial);
 
 			if (desc->uuid[0]) {
-				char uuid[UUID_STR_LEN + 1];
-				char *t = desc->uuid;
+				unsigned char uuid[UUID_STR_LEN + 1];
+				unsigned char *t = desc->uuid;
 
 				memset(uuid, 0, UUID_STR_LEN + 1);
 
@@ -474,9 +476,6 @@ int board_late_init_xilinx(void)
 				continue;
 
 			for (i = 0; i < EEPROM_HDR_NO_OF_MAC_ADDR; i++) {
-				if (!desc->mac_addr[i])
-					break;
-
 				if (is_valid_ethaddr((const u8 *)desc->mac_addr[i]))
 					ret |= eth_env_set_enetaddr_by_index("eth",
 							macid++, desc->mac_addr[i]);
@@ -583,8 +582,33 @@ bool __maybe_unused __weak board_detection(void)
 	return false;
 }
 
+bool __maybe_unused __weak soc_detection(void)
+{
+	return false;
+}
+
+char * __maybe_unused __weak soc_name_decode(void)
+{
+	return NULL;
+}
+
 int embedded_dtb_select(void)
 {
+	if (soc_detection()) {
+		char *soc_local_name;
+
+		soc_local_name = soc_name_decode();
+		if (soc_local_name) {
+			board_name = soc_local_name;
+			printf("Detected SOC name: %s\n", board_name);
+
+			/* Time to change DTB on fly */
+			/* Both ways should work here */
+			/* fdtdec_resetup(&rescan); */
+			return fdtdec_setup();
+		}
+	}
+
 	if (board_detection()) {
 		char *board_local_name;
 
@@ -600,5 +624,32 @@ int embedded_dtb_select(void)
 		}
 	}
 	return 0;
+}
+#endif
+
+#if defined(CONFIG_LMB)
+phys_size_t board_get_usable_ram_top(phys_size_t total_size)
+{
+	phys_size_t size;
+	phys_addr_t reg;
+	struct lmb lmb;
+
+	if (!total_size)
+		return gd->ram_top;
+
+	if (!IS_ALIGNED((ulong)gd->fdt_blob, 0x8))
+		panic("Not 64bit aligned DT location: %p\n", gd->fdt_blob);
+
+	/* found enough not-reserved memory to relocated U-Boot */
+	lmb_init(&lmb);
+	lmb_add(&lmb, gd->ram_base, gd->ram_size);
+	boot_fdt_add_mem_rsv_regions(&lmb, (void *)gd->fdt_blob);
+	size = ALIGN(CONFIG_SYS_MALLOC_LEN + total_size, MMU_SECTION_SIZE);
+	reg = lmb_alloc(&lmb, size, MMU_SECTION_SIZE);
+
+	if (!reg)
+		reg = gd->ram_top - size;
+
+	return reg + size;
 }
 #endif

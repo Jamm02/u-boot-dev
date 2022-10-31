@@ -264,6 +264,7 @@ F:	arch/arm/include/asm/arch-mx*/
 F:	arch/arm/include/asm/arch-vf610/
 F:	arch/arm/include/asm/mach-imx/
 F:	board/freescale/*mx*/
+F:	drivers/serial/serial_mxc.c
 
 ARM HISILICON
 M:	Peter Griffin <peter.griffin@linaro.org>
@@ -355,20 +356,26 @@ F:	doc/device-tree-bindings/phy/phy-mtk-*
 F:	doc/device-tree-bindings/usb/mediatek,*
 F:	doc/README.mediatek
 F:	drivers/clk/mediatek/
+F:	drivers/cpu/mtk_cpu.c
+F:	drivers/i2c/mtk_i2c.c
 F:	drivers/mmc/mtk-sd.c
 F:	drivers/phy/phy-mtk-*
 F:	drivers/pinctrl/mediatek/
 F:	drivers/power/domain/mtk-power-domain.c
 F:	drivers/ram/mediatek/
 F:	drivers/spi/mtk_snfi_spi.c
+F:	drivers/spi/mtk_spim.c
 F:	drivers/timer/mtk_timer.c
 F:	drivers/usb/host/xhci-mtk.c
 F:	drivers/usb/mtu3/
 F:	drivers/watchdog/mtk_wdt.c
 F:	drivers/net/mtk_eth.c
+F:	drivers/net/mtk_eth.h
 F:	drivers/reset/reset-mediatek.c
 F:	tools/mtk_image.c
 F:	tools/mtk_image.h
+F:	tools/mtk_nand_headers.c
+F:	tools/mtk_nand_headers.h
 N:	mediatek
 
 ARM METHODE SUPPORT
@@ -628,6 +635,13 @@ F:	arch/arm/mach-uniphier/
 F:	configs/uniphier_*_defconfig
 N:	uniphier
 
+ARM VERSAL NET
+M:	Michal Simek <michal.simek@amd.com>
+S:	Maintained
+T:	git https://source.denx.de/u-boot/custodians/u-boot-microblaze.git
+F:	arch/arm/mach-versal-net/
+N:	(?<!uni)versal-net
+
 ARM VERSAL
 M:	Michal Simek <michal.simek@amd.com>
 S:	Maintained
@@ -724,6 +738,13 @@ S:	Maintained
 F:	drivers/pci/pcie_phytium.c
 F:	arch/arm/dts/phytium-durian.dts
 
+ASPEED FMC SPI DRIVER
+M:	Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
+M:	Cédric Le Goater <clg@kaod.org>
+R:	Aspeed BMC SW team <BMC-SW@aspeedtech.com>
+S:	Maintained
+F:	drivers/spi/spi-aspeed-smc.c
+
 BINMAN
 M:	Simon Glass <sjg@chromium.org>
 M:	Alper Nebi Yasak <alpernebiyasak@gmail.com>
@@ -765,6 +786,11 @@ M:	Simon Glass <sjg@chromium.org>
 S:	Maintained
 F:	tools/buildman/
 
+CAT
+M:	Roger Knecht <rknecht@pm.me>
+S:	Maintained
+F:	cmd/cat.c
+
 CFI FLASH
 M:	Stefan Roese <sr@denx.de>
 S:	Maintained
@@ -787,6 +813,13 @@ S:	Maintained
 T:	git https://source.denx.de/u-boot/custodians/u-boot-coldfire.git
 F:	arch/m68k/
 F:	doc/arch/m68k.rst
+
+CYCLIC
+M:	Stefan Roese <sr@denx.de>
+S:	Maintained
+F:	cmd/cyclic.c
+F:	common/cyclic.c
+F:	include/cyclic.h
 
 DFU
 M:	Lukasz Majewski <lukma@denx.de>
@@ -843,6 +876,7 @@ F:	include/cp437.h
 F:	include/efi*
 F:	include/pe.h
 F:	include/asm-generic/pe.h
+F:	include/mm_communication.h
 F:	lib/charset.c
 F:	lib/efi*/
 F:	test/lib/efi_*
@@ -855,12 +889,6 @@ F:	cmd/nvedit_efi.c
 F:	tools/efivar.py
 F:	tools/file2include.c
 F:	tools/mkeficapsule.c
-
-EFI VARIABLES VIA OP-TEE
-M:	Ilias Apalodimas <ilias.apalodimas@linaro.org>
-S:	Maintained
-F:	lib/efi_loader/efi_variable_tee.c
-F:	include/mm_communication.h
 
 ENVIRONMENT
 M:	Joe Hershberger <joe.hershberger@ni.com>
@@ -917,6 +945,7 @@ T:	git https://source.denx.de/u-boot/custodians/u-boot-microblaze.git
 F:	drivers/fpga/
 F:	cmd/fpga.c
 F:	include/fpga.h
+F:	test/dm/fpga.c
 
 FLATTENED DEVICE TREE
 M:	Simon Glass <sjg@chromium.org>
@@ -1375,8 +1404,12 @@ F:	configs/k2g_hs_evm_defconfig
 F:	configs/k2l_hs_evm_defconfig
 F:	configs/am65x_hs_evm_r5_defconfig
 F:	configs/am65x_hs_evm_a53_defconfig
-F:	configs/j721e_hs_evm_r5_defconfig
+F:	configs/j7200_hs_evm_a72_defconfig
+F:	configs/j7200_hs_evm_r5_defconfig
 F:	configs/j721e_hs_evm_a72_defconfig
+F:	configs/j721e_hs_evm_r5_defconfig
+F:	configs/j721s2_hs_evm_a72_defconfig
+F:	configs/j721s2_hs_evm_r5_defconfig
 
 TPM DRIVERS
 M:	Ilias Apalodimas <ilias.apalodimas@linaro.org>
@@ -1485,6 +1518,13 @@ XTENSA
 M:	Max Filippov <jcmvbkbc@gmail.com>
 S:	Maintained
 F:	arch/xtensa/
+
+XXD
+M:	Roger Knecht <rknecht@pm.me>
+S:	Maintained
+F:	cmd/xxd.c
+F:	doc/usage/cmd/xxd.rst
+F:	test/py/tests/test_xxd/
 
 THE REST
 M:	Tom Rini <trini@konsulko.com>

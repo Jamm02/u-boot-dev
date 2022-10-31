@@ -58,7 +58,6 @@ dtb-$(CONFIG_ARCH_KIRKWOOD) += \
 	kirkwood-ib62x0.dtb \
 	kirkwood-iconnect.dtb \
 	kirkwood-is2.dtb \
-	kirkwood-km_kirkwood.dtb \
 	kirkwood-lsxhl.dtb \
 	kirkwood-lschlv2.dtb \
 	kirkwood-net2big.dtb \
@@ -137,6 +136,7 @@ dtb-$(CONFIG_ROCKCHIP_RK3368) += \
 
 dtb-$(CONFIG_ROCKCHIP_RK3399) += \
 	rk3399-evb.dtb \
+	rk3399-eaidk-610.dtb \
 	rk3399-ficus.dtb \
 	rk3399-firefly.dtb \
 	rk3399-gru-bob.dtb \
@@ -233,8 +233,11 @@ dtb-$(CONFIG_ARCH_TEGRA) += tegra20-harmony.dtb \
 	tegra210-p3450-0000.dtb
 
 ifdef CONFIG_ARMADA_32BIT
+ifdef CONFIG_ARMADA_375
 dtb-$(CONFIG_ARCH_MVEBU) +=			\
-	armada-375-db.dtb			\
+	armada-375-db.dtb
+else
+dtb-$(CONFIG_ARCH_MVEBU) +=			\
 	armada-385-atl-x530.dtb			\
 	armada-385-atl-x530DP.dtb		\
 	armada-385-db-88f6820-amc.dtb		\
@@ -254,6 +257,7 @@ dtb-$(CONFIG_ARCH_MVEBU) +=			\
 	armada-xp-maxbcm.dtb			\
 	armada-xp-synology-ds414.dtb		\
 	armada-xp-theadorable.dtb
+endif
 else
 dtb-$(CONFIG_ARCH_MVEBU) +=			\
 	armada-3720-db.dtb			\
@@ -379,6 +383,9 @@ dtb-$(CONFIG_ARCH_VERSAL) += \
 	versal-mini-emmc0.dtb \
 	versal-mini-emmc1.dtb \
 	xilinx-versal-virt.dtb
+dtb-$(CONFIG_ARCH_VERSAL_NET) += \
+	versal-net-mini.dtb \
+	xilinx-versal-net-virt.dtb
 dtb-$(CONFIG_ARCH_ZYNQMP_R5) += \
 	zynqmp-r5.dtb
 dtb-$(CONFIG_AM33XX) += \
@@ -388,8 +395,6 @@ dtb-$(CONFIG_AM33XX) += \
 	am335x-boneblack-wireless.dtb \
 	am335x-boneblue.dtb \
 	am335x-brppt1-mmc.dtb \
-	am335x-brppt1-nand.dtb \
-	am335x-brppt1-spi.dtb \
 	am335x-brxre1.dtb \
 	am335x-brsmarc1.dtb \
 	am335x-draco.dtb \
@@ -709,7 +714,8 @@ dtb-$(CONFIG_MACH_SUN50I_H6) += \
 	sun50i-h6-tanix-tx6.dtb \
 	sun50i-h6-tanix-tx6-mini.dtb
 dtb-$(CONFIG_MACH_SUN50I_H616) += \
-	sun50i-h616-orangepi-zero2.dtb
+	sun50i-h616-orangepi-zero2.dtb \
+	sun50i-h616-x96-mate.dtb
 dtb-$(CONFIG_MACH_SUN50I) += \
 	sun50i-a64-amarula-relic.dtb \
 	sun50i-a64-bananapi-m64.dtb \
@@ -883,8 +889,8 @@ dtb-$(CONFIG_MX6UL) += \
 	imx6ul-phytec-segin-ff-rdk-nand.dtb \
 	imx6ul-pico-hobbit.dtb \
 	imx6ul-pico-pi.dtb \
-	imx6ul-kontron-n631x-s.dtb \
-	imx6ull-kontron-n641x-s.dtb
+	imx6ul-kontron-bl.dtb \
+	imx6ull-kontron-bl.dtb
 
 dtb-$(CONFIG_MX6ULL) += \
 	imx6ull-14x14-evk.dtb \
@@ -895,6 +901,7 @@ dtb-$(CONFIG_MX6ULL) += \
 	imx6ull-phytec-segin-ff-rdk-emmc.dtb \
 	imx6ull-dart-6ul.dtb \
 	imx6ull-somlabs-visionsom.dtb \
+	imx6ulz-bsh-smm-m2.dtb \
 	imx6ulz-14x14-evk.dtb
 
 dtb-$(CONFIG_ARCH_MX6) += \
@@ -942,8 +949,8 @@ dtb-$(CONFIG_ARCH_IMX8M) += \
 	imx8mm-evk.dtb \
 	imx8mm-icore-mx8mm-ctouch2.dtb \
 	imx8mm-icore-mx8mm-edimm2.2.dtb \
-	imx8mm-kontron-n801x-s.dtb \
-	imx8mm-kontron-n801x-s-lvds.dtb \
+	imx8mm-kontron-bl.dtb \
+	imx8mm-kontron-bl-osm-s.dtb \
 	imx8mm-mx8menlo.dtb \
 	imx8mm-venice.dtb \
 	imx8mm-venice-gw71xx-0x.dtb \
@@ -952,6 +959,7 @@ dtb-$(CONFIG_ARCH_IMX8M) += \
 	imx8mm-venice-gw7901.dtb \
 	imx8mm-venice-gw7902.dtb \
 	imx8mm-venice-gw7903.dtb \
+	imx8mm-venice-gw7904.dtb \
 	imx8mm-verdin-wifi-dev.dtb \
 	phycore-imx8mm.dtb \
 	imx8mn-bsh-smm-s2.dtb \
@@ -969,18 +977,21 @@ dtb-$(CONFIG_ARCH_IMX8M) += \
 	imx8mq-phanbell.dtb \
 	imx8mp-dhcom-pdk2.dtb \
 	imx8mp-evk.dtb \
+	imx8mp-icore-mx8mp-edimm2.2.dtb \
 	imx8mp-phyboard-pollux-rdk.dtb \
 	imx8mp-venice.dtb \
 	imx8mp-venice-gw74xx.dtb \
 	imx8mp-verdin-wifi-dev.dtb \
 	imx8mq-pico-pi.dtb \
-	imx8mq-kontron-pitx-imx8m.dtb
+	imx8mq-kontron-pitx-imx8m.dtb \
+	imx8mq-librem5-r4.dtb
 
 dtb-$(CONFIG_ARCH_IMX9) += \
 	imx93-11x11-evk.dtb
 
 dtb-$(CONFIG_ARCH_IMXRT) += imxrt1050-evk.dtb \
-	imxrt1020-evk.dtb
+	imxrt1020-evk.dtb \
+	imxrt1170-evk.dtb \
 
 dtb-$(CONFIG_RCAR_GEN2) += \
 	r8a7790-lager-u-boot.dtb \
@@ -1198,7 +1209,8 @@ dtb-$(CONFIG_STM32MP15x) += \
 	stm32mp15xx-dhcom-pdk2.dtb \
 	stm32mp15xx-dhcom-picoitx.dtb \
 	stm32mp15xx-dhcor-avenger96.dtb \
-	stm32mp15xx-dhcor-drc-compact.dtb
+	stm32mp15xx-dhcor-drc-compact.dtb \
+	stm32mp15xx-dhcor-testbench.dtb
 
 dtb-$(CONFIG_SOC_K3_AM654) += \
 	k3-am654-base-board.dtb \
@@ -1230,12 +1242,22 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += \
 	mt7622-bananapi-bpi-r64.dtb \
 	mt7623n-bananapi-bpi-r2.dtb \
 	mt7629-rfb.dtb \
+	mt7981-rfb.dtb \
+	mt7981-emmc-rfb.dtb \
+	mt7981-sd-rfb.dtb \
+	mt7986a-rfb.dtb \
+	mt7986b-rfb.dtb \
+	mt7986a-sd-rfb.dtb \
+	mt7986b-sd-rfb.dtb \
+	mt7986a-emmc-rfb.dtb \
+	mt7986b-emmc-rfb.dtb \
 	mt8183-pumpkin.dtb \
 	mt8512-bm1-emmc.dtb \
 	mt8516-pumpkin.dtb \
 	mt8518-ap1-emmc.dtb
 
 dtb-$(CONFIG_ARCH_NPCM7xx) += nuvoton-npcm750-evb.dtb
+dtb-$(CONFIG_ARCH_NPCM8XX) += nuvoton-npcm845-evb.dtb
 dtb-$(CONFIG_XEN) += xenguest-arm64.dtb
 
 dtb-$(CONFIG_ARCH_OCTEONTX) += octeontx.dtb

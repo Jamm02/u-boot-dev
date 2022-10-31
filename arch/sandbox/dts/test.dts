@@ -233,6 +233,8 @@
 		test5-gpios = <&gpio_a 19>;
 
 		bool-value;
+		int8-value = /bits/ 8 <0x12>;
+		int16-value = /bits/ 16 <0x1234>;
 		int-value = <1234>;
 		uint-value = <(-1234)>;
 		int64-value = /bits/ 64 <0x1111222233334444>;
@@ -650,6 +652,10 @@
 		};
 	};
 
+	fpga {
+		compatible = "sandbox,fpga";
+	};
+
 	pinctrl-gpio {
 		compatible = "sandbox,pinctrl-gpio";
 
@@ -926,6 +932,10 @@
 		};
 	};
 
+	memory-controller {
+		compatible = "sandbox,memory";
+	};
+
 	misc-test {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -1119,10 +1129,12 @@
 
 	reset@0 {
 		compatible = "sandbox,warm-reset";
+		u-boot,dm-pre-proper;
 	};
 
 	reset@1 {
 		compatible = "sandbox,reset";
+		u-boot,dm-pre-proper;
 	};
 
 	resetc: reset-ctl {
@@ -1154,6 +1166,11 @@
 	panel {
 		compatible = "simple-panel";
 		backlight = <&backlight 0 100>;
+	};
+
+	scsi {
+		compatible = "sandbox,scsi";
+		sandbox,filepath = "scsi.img";
 	};
 
 	smem@0 {
@@ -1682,6 +1699,10 @@
 			reg = <0 0x10>;
 			compatible = "sandbox,regmap_test";
 		};
+	};
+
+	thermal {
+		compatible = "sandbox,thermal";
 	};
 };
 
